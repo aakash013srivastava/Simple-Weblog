@@ -1,17 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const expressValidator = require('express-validator');
+const mongojs = require('mongojs')
+const crypto = require('crypto');
 
-let app = express();
-/*
-var logger = function(req,res,next){
-    console.log('Logging');
-    next();
-}
+const algorithm = 'aes-256-ctr',
+    password = 'd6F3Efeq';
 
-app.use(logger);
-*/
+const app = express();
+
+const db = mongojs('weblog', ['users'])
+
 //View engine
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
@@ -24,34 +23,42 @@ app.use(bodyParser.urlencoded({extended:false}));
 //SET static path
 app.use(express.static(path.join(__dirname,'public')));
 
-var users = [
-    {
-        first_name:'Aakash',
-        last_name:'Srivastava'
-    },
-    {
-        first_name:'Lebron',
-        last_name:'James'
-    }
-];
-
 app.get('/',(req,res) => {
-    //let title = 'Customers';
-    res.render('index',{
-        'title':'Customers',
-        'users':users
-    });
+    res.render('index');
 });
 
 app.post('/users/add',(req,res) => {
-    var new_user = {
-        first_name:req.body.first_name,
-        last_name:req.body.last_name,
-        email:req.body.email
-    };
-    console.log(new_user);
+    let crypted = encrypt(req.body.password);
+    //db.insert
+    console.log(crypted);
+});
+
+app.get('/about',(req,res) => {
+    res.render('about');
+});
+
+app.get('/register',(req,res) => {
+    res.render('register');
+});
+
+app.get('/login',(req,res) => {
+    res.render('login');
 });
 
 app.listen(3000,() => {
     console.log('Server started on port 3000');
 });
+
+function encrypt(text){
+    var cipher = crypto.createCipher(algorithm,password)
+    var crypted = cipher.update(text,'utf8','hex')
+    crypted += cipher.final('hex');
+    return crypted;
+}
+
+function decrypt(text){
+    var decipher = crypto.createDecipher(algorithm,password)
+    var dec = decipher.update(text,'hex','utf8')
+    dec += decipher.final('utf8');
+    return dec;
+  }

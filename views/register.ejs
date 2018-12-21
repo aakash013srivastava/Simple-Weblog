@@ -1,6 +1,9 @@
 <% include partials/header %>
 
 <h1>Register</h1>
+<div class="alert alert-danger" id="messages">
+
+</div>
 <form method="POST" action="/users/add">
     <table class="table">
         <tr>
@@ -17,7 +20,7 @@
             <td><input type="password" name="confirm_password" id="confirm_password" required></td>
         </tr>
         <tr>
-            <td><input type="submit" value="Submit" onclick="checkInput()"></td>
+            <td><input type="submit" value="Submit" id="form_id" onsubmit="checkInput()"></td>
         </tr>
     </table>
 </form>
@@ -26,7 +29,9 @@
         pwd = document.getElementById('password').value
         cpwd = document.getElementById('confirm_password').value
         if(pwd != cpwd){
-
+            document.getElementById('messages').innerHTML = "Confirm Password should be same as Password "
+        }else{
+            document.getElementById('form_id').submit();
         }
     }
 </script>
