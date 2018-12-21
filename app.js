@@ -4,12 +4,15 @@ const path = require('path');
 const mongojs = require('mongojs')
 const crypto = require('crypto');
 
+// Crypto settings
 const algorithm = 'aes-256-ctr',
     password = 'd6F3Efeq';
 
+// MongoDB settings
+const db = mongojs('weblog',['users']);
+
 const app = express();
 
-const db = mongojs('weblog', ['users'])
 
 //View engine
 app.set('view engine','ejs');
@@ -30,7 +33,23 @@ app.get('/',(req,res) => {
 app.post('/users/add',(req,res) => {
     let crypted = encrypt(req.body.password);
     //db.insert
-    console.log(crypted);
+    let new_user = {
+        email:req.body.email,
+        password:crypted
+    };
+    db.users.insert(new_user, (err,result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.redirect('/login');
+        }
+    });
+});
+
+app.post('/users/login',(req,res) => {
+    let decrypted = decrypt(req.body.password);
+    //db.insert
+    console.log(req.body.password);
 });
 
 app.get('/about',(req,res) => {
