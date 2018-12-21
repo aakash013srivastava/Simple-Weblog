@@ -17,21 +17,22 @@
         </tr>
         <tr>
             <td><label>Confirm Password</label></td>
-            <td><input type="password" name="confirm_password" id="confirm_password" required></td>
+            <td><input type="password" name="confirm_password" id="confirm_password" onchange="checkInput()" required></td>
         </tr>
         <tr>
-            <td><input type="submit" value="Submit" id="form_id" onsubmit="checkInput()"></td>
+            <td><input type="submit" value="Submit" id="form_id" onsubmit="return checkInput();"></td>
         </tr>
     </table>
 </form>
 <script>
     function checkInput(){
-        pwd = document.getElementById('password').value
-        cpwd = document.getElementById('confirm_password').value
+        pwd = document.getElementById('password').value;
+        cpwd = document.getElementById('confirm_password').value;
         if(pwd != cpwd){
-            document.getElementById('messages').innerHTML = "Confirm Password should be same as Password "
+            document.getElementById('messages').innerHTML = "Confirm Password should be same as Password";
+            return false;
         }else{
-            document.getElementById('form_id').submit();
+            return true;
         }
     }
 </script>
