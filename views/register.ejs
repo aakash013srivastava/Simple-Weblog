@@ -1,0 +1,33 @@
+<% include partials/header %>
+
+<h1>Register</h1>
+<form method="POST" action="/users/add">
+    <table class="table">
+        <tr>
+            <td><label>Email</label></td>
+            <td><input type="email" name="email" required></td>
+        </tr>
+        <tr>
+            <td><label>Password</label></td>
+            <td><input type="password" name="password" id="password" pattern="[A-Za-z0-9]{6,}"
+                     title="Six or more alphabets and digits" required></td>
+        </tr>
+        <tr>
+            <td><label>Confirm Password</label></td>
+            <td><input type="password" name="confirm_password" id="confirm_password" required></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Submit" onclick="checkInput()"></td>
+        </tr>
+    </table>
+</form>
+<script>
+    function checkInput(){
+        pwd = document.getElementById('password').value
+        cpwd = document.getElementById('confirm_password').value
+        if(pwd != cpwd){
+
+        }
+    }
+</script>
+<% include partials/footer %>
