@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const mongojs = require('mongojs')
+const mongojs = require('mongojs');
+const session = require('express-session');
 const crypto = require('crypto');
 
 // Crypto settings
@@ -23,33 +24,65 @@ app.set('views',path.join(__dirname,'views'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
+//Use express session
+app.use(session({secret:'secretkey'}));
 //SET static path
 app.use(express.static(path.join(__dirname,'public')));
 
+// GET home route
 app.get('/',(req,res) => {
-    res.render('index');
+    res.render('index',{'message':''});
 });
 
+// Register new users
 app.post('/users/add',(req,res) => {
-    let crypted = encrypt(req.body.password);
-    //db.insert
-    let new_user = {
-        email:req.body.email,
-        password:crypted
-    };
-    db.users.insert(new_user, (err,result) => {
-        if(err){
-            console.log(err);
+    
+    //Check if user already exists
+    db.users.find({email:req.body.email},(err,docs) =>{
+        if(!err){
+            
+            if(docs.length != 0){
+                // User already exists
+                res.render('register',{'msg':'User already exists'});
+                console.log("User already exists");
+            }else{
+                // Create new User
+                let crypted = encrypt(req.body.password);
+                let new_user = {
+                    email:req.body.email,
+                    password:crypted
+                };
+                db.users.insert(new_user, (err,result) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        res.redirect('/login');
+                    }
+                });
+            }
+            
         }else{
-            res.redirect('/login');
+            console.log(err);
         }
     });
+    
 });
 
 app.post('/users/login',(req,res) => {
-    let decrypted = decrypt(req.body.password);
-    //db.insert
-    console.log(req.body.password);
+    
+    let encrypted_password = encrypt(req.body.password);
+    db.users.find({email:req.body.email},(err,docs) => {
+        if(encrypted_password == docs[0]['password']){
+            // Credentials verified
+            req.session.email = req.body.email;
+            req.session.password = docs[0]['password'];
+            req.session.user_id = docs[0]['_id'];
+            res.render('index',{'message':'You are now logged in !!!'}); 
+        }else{
+            // Wrong credentials
+            res.render('login',{'message':'Wrong credentials, Login again'})
+        }
+    });
 });
 
 app.get('/about',(req,res) => {
@@ -57,11 +90,11 @@ app.get('/about',(req,res) => {
 });
 
 app.get('/register',(req,res) => {
-    res.render('register');
+    res.render('register',{'message':""});
 });
 
 app.get('/login',(req,res) => {
-    res.render('login');
+    res.render('login',{'message':''});
 });
 
 app.listen(3000,() => {
