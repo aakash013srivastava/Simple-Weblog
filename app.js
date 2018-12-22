@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname,'public')));
 
 // GET home route
 app.get('/',(req,res) => {
-    res.render('index',{'message':''});
+    res.render('index',{'message':'','user':req.session.email});
 });
 
 // Register new users
@@ -77,7 +77,8 @@ app.post('/users/login',(req,res) => {
             req.session.email = req.body.email;
             req.session.password = docs[0]['password'];
             req.session.user_id = docs[0]['_id'];
-            res.render('index',{'message':'You are now logged in !!!'}); 
+            res.render('index',{'message':'You are now logged in !!!',
+                                'user':req.session.email}); 
         }else{
             // Wrong credentials
             res.render('login',{'message':'Wrong credentials, Login again'})
@@ -85,16 +86,23 @@ app.post('/users/login',(req,res) => {
     });
 });
 
+app.get('/logout',(req,res) => {
+    req.session.email = null;
+    req.session.password = null;
+    req.session.user_id = null;
+    res.render('index',{'message':'You successfully logged out !!!','user':null});
+});
+
 app.get('/about',(req,res) => {
-    res.render('about');
+    res.render('about',{'message':'','user':req.session.email});
 });
 
 app.get('/register',(req,res) => {
-    res.render('register',{'message':""});
+    res.render('register',{'message':"",'user':req.session.email});
 });
 
 app.get('/login',(req,res) => {
-    res.render('login',{'message':''});
+    res.render('login',{'message':'','user':req.session.email});
 });
 
 app.listen(3000,() => {
