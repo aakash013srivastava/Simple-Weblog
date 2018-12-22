@@ -1,9 +1,10 @@
 <% include partials/header %>
 
 <h1>Register</h1>
-<div class="alert alert-danger" id="messages">
 
-</div>
+<%if(msg){%>
+<div class="alert alert-danger" id="messages"><%= message %></div>
+<%}%>
 <form method="POST" action="/users/add">
     <table class="table">
         <tr>
