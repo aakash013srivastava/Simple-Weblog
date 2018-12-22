@@ -31,7 +31,11 @@ app.use(express.static(path.join(__dirname,'public')));
 
 // GET home route
 app.get('/',(req,res) => {
-    res.render('index',{'message':'','user':req.session.email});
+    posts = db.articles.find((err,result) => {
+        res.render('index',{'message':'','user':req.session.email,'posts':result});
+    });
+
+    
 });
 
 // Register new users
@@ -77,11 +81,15 @@ app.post('/users/login',(req,res) => {
             req.session.email = req.body.email;
             req.session.password = docs[0]['password'];
             req.session.user_id = docs[0]['_id'];
-            res.render('index',{'message':'You are now logged in !!!',
-                                'user':req.session.email}); 
+            db.articles.find((err,result) => {
+                res.render('index',{'message':'You are now logged in !!!',
+                                'user':req.session.email,
+                                'posts':result}); 
+            });
+            
         }else{
             // Wrong credentials
-            res.render('login',{'message':'Wrong credentials, Login again'})
+            res.render('login',{'message':'Wrong credentials, Login again','user':req.session.email})
         }
     });
 });
@@ -90,12 +98,34 @@ app.get('/logout',(req,res) => {
     req.session.email = null;
     req.session.password = null;
     req.session.user_id = null;
-    res.render('index',{'message':'You successfully logged out !!!','user':null});
+    res.render('index',{'message':'You successfully logged out !!!','user':req.session.email});
+});
+
+app.post('/post_article',(req,res) => {
+    new_post = {
+        title:req.body.title,
+        body:req.body.article_text,
+        author:req.session.email,
+        created_at: new Date()
+    };
+    db.articles.insert(new_post,(err,result) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.render('index',{'message':'Article posted Successfully !!!','user':req.session.email});
+        }
+    });
+    res.redirect('/');
 });
 
 app.get('/about',(req,res) => {
     res.render('about',{'message':'','user':req.session.email});
 });
+
+app.get('/post_article',(req,res) => {
+    res.render('post_article',{'message':'','user':req.session.email});
+});
+
 
 app.get('/register',(req,res) => {
     res.render('register',{'message':"",'user':req.session.email});
