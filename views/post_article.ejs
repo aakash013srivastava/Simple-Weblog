@@ -8,11 +8,12 @@
 <form method="POST" action="/post_article">
 
     <label for="title">Title</label><br>
-    <input type="text" name="title" title="3 or more characters and digits" pattern="[A-Za-z0-9\s]{3,}" required/><br><br>
+    <input type="text" name="title" title="3 or more characters and digits"
+            pattern="[A-Za-z0-9\s]{3,}" value="<%=post[0].title%>" required/><br><br>
     <label for="article_text">Body</label><br>
     <!-- Create a tag that we will use as the editable area. -->
     <!-- You can use a div tag as well. -->
-    <textarea name="article_text" id="article_text" required></textarea><br><br>
+    <textarea name="article_text" id="article_text" value="<%=post[0].body%>" required></textarea><br><br>
     <input type="submit" name="submit" value="Submit" class="btn btn-primary">
 
 </form>
@@ -22,8 +23,10 @@
     $(function() {
         $('#article_text').froalaEditor({
             pastePlain: true
-        })
+        });
+        $('#article_text').froalaEditor('html.set', "<%=post[0].body%>");
     });
+    
 </script> 
       
 
