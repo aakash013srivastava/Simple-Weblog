@@ -72,6 +72,7 @@ app.post('/users/add',(req,res) => {
     
 });
 
+// POST request route for user login 
 app.post('/users/login',(req,res) => {
     
     let encrypted_password = encrypt(req.body.password);
@@ -94,6 +95,7 @@ app.post('/users/login',(req,res) => {
     });
 });
 
+// GET request route for logging out user
 app.get('/logout',(req,res) => {
     req.session.email = null;
     req.session.password = null;
@@ -101,36 +103,94 @@ app.get('/logout',(req,res) => {
     res.render('index',{'message':'You successfully logged out !!!','user':req.session.email});
 });
 
-app.post('/post_article',(req,res) => {
-    new_post = {
-        title:req.body.title,
-        body:req.body.article_text,
-        author:req.session.email,
-        created_at: new Date()
-    };
-    db.articles.insert(new_post,(err,result) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.render('index',{'message':'Article posted Successfully !!!','user':req.session.email});
-        }
-    });
-    res.redirect('/');
+// GET request route for article creation page
+app.get('/post_article',(req,res) => {
+    res.render('post_article',{'message':'','user':req.session.email,'update':'false'});
 });
 
+
+// POST request route for creating/updating new article
+app.post('/post_article',(req,res) => {
+    
+    if(req.body.update_check == 'false'){ // To create new article
+        post = {
+            title:req.body.title,
+            body:req.body.article_text,
+            author:req.session.email,
+            created_at: new Date()
+        };
+        console.log("insert article called");
+        db.articles.insert(post,(err,result) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.render('index',{'message':'Article posted Successfully !!!','user':req.session.email});
+            }
+        });
+        res.redirect('/');
+    }else if(req.body.update_check == 'true'){ // To update an article
+        console.log("edit article called");
+        console.log(req.body.article_id);
+        db.articles.findAndModify({query:{_id: db.ObjectId(req.body.article_id)},
+            update:{$set:{title:req.body.title,body:req.body.article_text,
+                    author:req.session.email,created_at: new Date() }},
+                    new:true
+            },
+         (err, doc) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log("Article Edited");
+            }
+            
+        });
+        res.redirect('/dashboard');
+    }
+    
+});
+
+// User dashboard for editing or removing articles
+app.get('/dashboard',(req,res) => {
+    db.articles.find({author:req.session.email},(err,result) => {
+        res.render('dashboard',{'message':'','user':req.session.email,
+                                'posts':result});
+    });
+    
+});
+
+// Edit post route
+app.get('/post/edit/:id',(req,res) => {
+    db.articles.find({_id:db.ObjectId(req.params.id)},(err,result) => {
+        res.render('post_article',{'message':'Edit your article here...',
+                                    'post':result,
+                                    'user':req.session.email,
+                                    'update':'true'});
+    });
+});
+
+// Delete post route
+app.get('/post/delete/:id',(req,res) => {
+    db.articles.remove({_id:db.ObjectId(req.params.id)},(err,result) => {
+        db.articles.find({author:req.session.email},(err2,result2) =>{
+            res.render('dashboard',{'message':'Article deleted successfully',
+                                    'posts':result2,'user':req.session.email});
+        });
+        
+    });
+});
+
+// GET request route for About page
 app.get('/about',(req,res) => {
     res.render('about',{'message':'','user':req.session.email});
 });
 
-app.get('/post_article',(req,res) => {
-    res.render('post_article',{'message':'','user':req.session.email});
-});
 
-
+// GET request route for user registration page
 app.get('/register',(req,res) => {
     res.render('register',{'message':"",'user':req.session.email});
 });
 
+// GET request route for login page
 app.get('/login',(req,res) => {
     res.render('login',{'message':'','user':req.session.email});
 });

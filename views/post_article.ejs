@@ -14,6 +14,8 @@
     <!-- Create a tag that we will use as the editable area. -->
     <!-- You can use a div tag as well. -->
     <textarea name="article_text" id="article_text" value="<%=post[0].body%>" required></textarea><br><br>
+    <input type="hidden" name="update_check" value="<%=update%>"/>
+    <input type="hidden" name="article_id" value="<%=post[0]._id%>"/>
     <input type="submit" name="submit" value="Submit" class="btn btn-primary">
 
 </form>
