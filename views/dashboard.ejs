@@ -1,0 +1,15 @@
+<% include partials/header %>
+
+<h1>Dashboard</h1>
+
+<div class="alert alert-danger" id="messages"><%= message %></div>
+
+<% for (post in posts) {%>
+    <h3><%= posts[post].title %></h3>
+    <p><%= posts[post].body %></p><br>
+    <small>Written by: <%=posts[post].author %> at <%= posts[post].created_at%></small>
+    <a href="/post/edit/<%=posts[post]._id%>" class="btn btn-primary" id="edit_button">Edit</a>
+    <a href="/post/delete/<%=posts[post]._id%>" class="btn btn-danger" id="delete_button">Delete</a>
+<% } %>
+
+<% include partials/footer %> 
