@@ -12,5 +12,17 @@
     <a href="/post/delete/<%=posts[post]._id%>" class="btn btn-danger" id="delete_button">Delete</a>
 <% } %>
 
+<script>
+    $(document).ready(function(event){
+        $('#delete_button').click(function(event){
+            var check = confirm("Are you sure ?");
+            if(check){  
+                
+            }else{ 
+                event.preventDefault();
+            }
+        });
+    });
+</script>
 
 <% include partials/footer %> 

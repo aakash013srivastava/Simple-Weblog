@@ -129,8 +129,6 @@ app.post('/post_article',(req,res) => {
         });
         res.redirect('/');
     }else if(req.body.update_check == 'true'){ // To update an article
-        console.log("edit article called");
-        console.log(req.body.article_id);
         db.articles.findAndModify({query:{_id: db.ObjectId(req.body.article_id)},
             update:{$set:{title:req.body.title,body:req.body.article_text,
                     author:req.session.email,created_at: new Date() }},
@@ -140,7 +138,7 @@ app.post('/post_article',(req,res) => {
             if(err){
                 console.log(err);
             }else{
-                console.log("Article Edited");
+                // Do nothing, article updated
             }
             
         });
@@ -156,6 +154,41 @@ app.get('/dashboard',(req,res) => {
                                 'posts':result});
     });
     
+});
+
+// Route to post a comment on a post
+
+app.post('/post/view/:id',(req,res) => {
+    new_comment ={
+        text:req.body.comment_text,
+        author:req.session.email,
+        article_id:req.params.id,
+        created_at: new Date()
+    };
+    db.comments.insert(new_comment,(err,result) => {
+        if(err){
+            console.log(err);
+        }else{
+            db.articles.findOne({_id:db.ObjectId(req.params.id)},(err2,article)=>{
+                db.comments.find({article_id:req.params.id},(err3,comments)=>{
+                    res.render('view_post',{'message':'Comment Posted','user':req.session.email,
+                                            'post':article,'comments':comments})
+                });
+            });
+            
+        }
+    });
+});
+
+// Route to view single post
+app.get('/post/view/:id', (req,res)=>{
+    db.articles.findOne({_id:db.ObjectId(req.params.id)},(err,result) => {
+        db.comments.find({article_id:req.params.id},(err2,result2) => {
+            res.render('view_post',{'message':'View or comment on a post','user':req.session.email,
+                                'post':result,'comments':result2});
+        });
+        
+    });
 });
 
 // Edit post route

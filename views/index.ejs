@@ -5,9 +5,12 @@
 <div class="alert alert-danger" id="messages"><%= message %></div>
 
 <% for (post in posts) {%>
-    <h3><%= posts[post].title %></h3>
-    <p><%= posts[post].body %></p><br>
-    <small>Written by: <%=posts[post].author %> at <%= posts[post].created_at%></small>
+    <a href="/post/view/<%=posts[post]._id%>"><%= posts[post].title %></a>
+    <small>Written by: <%=posts[post].author %> at <%= posts[post].created_at%></small><br>
 <% } %>
+
+<script>
+        
+</script>
 
 <% include partials/footer %> 

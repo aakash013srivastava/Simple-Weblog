@@ -1,0 +1,33 @@
+<% include partials/header %>
+
+<h1>View a Post</h1>
+
+<div class="alert alert-danger" id="messages"><%= message %></div>
+
+    <h3><%= post.title %></h3>
+    <small>Written by: <%=post.author %> at <%= post.created_at%></small><br>
+    <p><%= post.body %></p><br>
+    <h4>Comments</h4>
+    <% for (comment in comments){ %>
+    <u><%=comments[comment].author%></u>:
+    <i><%=comments[comment].text%></i><br>
+    <% } %>
+    <hr>
+    <div class="container">
+        <% if(user) { %>
+            <h5>Add a comment</h5>
+            <div id="comment_div">
+                <form method="POST" action="">
+                    <input type="text" name="comment_text" placeholder="Comment text">
+                    <input type="submit" name="submit" value="Comment">
+                </form>
+            </div>
+        <% } %>
+    </div>
+
+
+<script>
+        
+</script>
+
+<% include partials/footer %> 

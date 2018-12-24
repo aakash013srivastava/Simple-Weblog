@@ -4,22 +4,22 @@
 
 <div class="alert alert-danger" id="messages"><%= message %></div>
 
+<% if(user){ %>
+    <form method="POST" action="/post_article">
 
-<form method="POST" action="/post_article">
+        <label for="title">Title</label><br>
+        <input type="text" name="title" title="3 or more characters and digits"
+                pattern="[A-Za-z0-9\s]{3,}" value="<%=post[0].title%>" required/><br><br>
+        <label for="article_text">Body</label><br>
+        <!-- Create a tag that we will use as the editable area. -->
+        <!-- You can use a div tag as well. -->
+        <textarea name="article_text" id="article_text" value="<%=post[0].body%>" required></textarea><br><br>
+        <input type="hidden" name="update_check" value="<%=update%>"/>
+        <input type="hidden" name="article_id" value="<%=post[0]._id%>"/>
+        <input type="submit" name="submit" value="Submit" class="btn btn-primary">
 
-    <label for="title">Title</label><br>
-    <input type="text" name="title" title="3 or more characters and digits"
-            pattern="[A-Za-z0-9\s]{3,}" value="<%=post[0].title%>" required/><br><br>
-    <label for="article_text">Body</label><br>
-    <!-- Create a tag that we will use as the editable area. -->
-    <!-- You can use a div tag as well. -->
-    <textarea name="article_text" id="article_text" value="<%=post[0].body%>" required></textarea><br><br>
-    <input type="hidden" name="update_check" value="<%=update%>"/>
-    <input type="hidden" name="article_id" value="<%=post[0]._id%>"/>
-    <input type="submit" name="submit" value="Submit" class="btn btn-primary">
-
-</form>
-
+    </form>
+<% } %>
 <!-- Initialize the editor. -->
 <script>
     $(function() {
