@@ -213,6 +213,20 @@ app.get('/post/delete/:id',(req,res) => {
     });
 });
 
+// Delete comments route
+
+app.get('/comments/delete/:post_id/:id', (req,res)=>{
+    db.comments.remove({_id:db.ObjectId(req.params.id)},(err,result) => {
+        db.articles.findOne({_id:db.ObjectId(req.params.post_id)},(err2,article) => {
+            db.comments.find({article_id:req.params.post_id},(err3,comments) => {
+                res.render('view_post',{'message':'View or comment on a post','user':req.session.email,
+                                    'post':article,'comments':comments});
+            });
+        });
+    });
+});
+
+
 // GET request route for About page
 app.get('/about',(req,res) => {
     res.render('about',{'message':'','user':req.session.email});
