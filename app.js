@@ -204,11 +204,12 @@ app.get('/post/edit/:id',(req,res) => {
 // Delete post route
 app.get('/post/delete/:id',(req,res) => {
     db.articles.remove({_id:db.ObjectId(req.params.id)},(err,result) => {
-        db.articles.find({author:req.session.email},(err2,result2) =>{
-            res.render('dashboard',{'message':'Article deleted successfully',
-                                    'posts':result2,'user':req.session.email});
+        db.comments.remove({article_id:req.params.id},(err2,result2) => {
+            db.articles.find({author:req.session.email},(err3,articles) =>{
+                res.render('dashboard',{'message':'Article deleted successfully',
+                                        'posts':articles,'user':req.session.email});
+            });
         });
-        
     });
 });
 
